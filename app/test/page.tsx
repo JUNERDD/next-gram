@@ -46,31 +46,32 @@ export default function Test() {
         ))}
       </div>
 
-      {createPortal(
-        <AnimatePresence>
-          {selectedId && (
-            <motion.div
-              className="modal-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <motion.dialog
-                ref={dialogRef}
-                className="modal"
-                layoutId={selectedId}
+      {globalThis?.document &&
+        createPortal(
+          <AnimatePresence>
+            {selectedId && (
+              <motion.div
+                className="modal-backdrop"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <span className="text-background">{selectedId}</span>
-                <motion.button onClick={handleClose} className="close-button" />
-              </motion.dialog>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
+                <motion.dialog
+                  ref={dialogRef}
+                  className="modal"
+                  layoutId={selectedId}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <span className="text-background">{selectedId}</span>
+                  <motion.button onClick={handleClose} className="close-button" />
+                </motion.dialog>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          globalThis.document.body
+        )}
     </>
   )
 }
