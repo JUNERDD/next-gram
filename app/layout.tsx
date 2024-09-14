@@ -1,15 +1,11 @@
-import './global.css';
+import './global.css'
 
 export const metadata = {
   title: 'NextGram',
-  description:
-    'A sample Next.js app showing dynamic routing with modals as a route.',
-};
+  description: 'A sample Next.js app showing dynamic routing with modals as a route.'
+}
 
-export default function RootLayout(props: {
-  children: React.ReactNode;
-  modal: React.ReactNode;
-}) {
+export default function RootLayout(props: { children: React.ReactNode; modal: React.ReactNode }) {
   return (
     <html>
       <body>
@@ -18,5 +14,5 @@ export default function RootLayout(props: {
         <div id="modal-root" />
       </body>
     </html>
-  );
+  )
 }
