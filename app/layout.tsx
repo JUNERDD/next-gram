@@ -16,7 +16,6 @@ export default function RootLayout(props: { children: React.ReactNode; modal: Re
           <AppNavBar />
           {props.children}
           {props.modal}
-          <div id="modal-root" />
         </Providers>
       </body>
     </html>
