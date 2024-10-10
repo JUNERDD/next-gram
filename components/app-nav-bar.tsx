@@ -14,6 +14,9 @@ export default function AppNavBar() {
       <Link className={pathname === '/test' ? 'text-blue-500' : ''} href="/test">
         test
       </Link>
+      <Link className={pathname === '/tools' ? 'text-blue-500' : ''} href="/tools">
+        tools
+      </Link>
     </div>
   )
 }
