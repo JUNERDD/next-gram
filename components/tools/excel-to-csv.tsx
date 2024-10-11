@@ -7,7 +7,7 @@ export default function ExcelToCsv() {
   const [csvData, setCsvData] = useState<string | null>(null)
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) {
+    if (!e.target.files?.length) {
       return
     }
     setFile(e.target.files[0])
@@ -53,12 +53,12 @@ export default function ExcelToCsv() {
           下载
         </button>
       </div>
-      {csvData && (
-        <div className="mt-4">
-          <h3>CSV 文件预览：</h3>
-          <pre className="whitespace-pre-wrap rounded p-2">{csvData}</pre>
-        </div>
-      )}
+      <textarea
+        className="h-48 w-full whitespace-pre-wrap rounded p-2"
+        placeholder="请输入文本内容"
+        value={csvData || ''}
+        onChange={(e) => setCsvData(e.target.value)}
+      ></textarea>
     </div>
   )
 }
