@@ -11,7 +11,7 @@ export const metadata = {
 export default function RootLayout(props: { children: React.ReactNode; modal: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <body>
+      <body className="px-4">
         <Providers>
           <AppNavBar />
           {props.children}
