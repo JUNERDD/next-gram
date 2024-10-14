@@ -4,13 +4,15 @@ import { Card, CardBody } from '@nextui-org/react'
 
 import CsvToExcel from '../../components/tools/csv-to-excel'
 import ExcelToCsv from '../../components/tools/excel-to-csv'
+import PdfToExcel from '../../components/tools/pdf-to-excel'
 import SplitExcel from '../../components/tools/split-excel'
 
 export default function Tools() {
   const tools = [
     { key: 'csv-to-excel', title: 'CSV To Excel', component: CsvToExcel },
     { key: 'excel-to-csv', title: 'Excel To CSV', component: ExcelToCsv },
-    { key: 'split-excel', title: 'Split Excel', component: SplitExcel }
+    { key: 'split-excel', title: 'Split Excel', component: SplitExcel },
+    { key: 'pdf-to-excel', title: 'PDF To Excel', component: PdfToExcel }
   ]
 
   return (
@@ -19,7 +21,7 @@ export default function Tools() {
         {tools.map((tool) => (
           <li key={tool.key} className="mb-4">
             <h2 id={tool.key} className="mb-2 text-xl font-bold">
-              <a href={`#${tool.key}`}>{tool.title}</a>
+              <a href={`#${tool.key}`}># {tool.title}</a>
             </h2>
             <Card>
               <CardBody>

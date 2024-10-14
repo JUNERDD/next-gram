@@ -20,6 +20,7 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "file-saver": "^2.0.5",
     "framer-motion": "^11.5.4",
+    "jszip": "^3.10.1",
     "next": "15.0.0-canary.61",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
