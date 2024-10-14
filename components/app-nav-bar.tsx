@@ -7,7 +7,7 @@ export default function AppNavBar() {
   const pathname = usePathname()
 
   return (
-    <div className="fixed left-0 right-0 top-0 flex items-center justify-center gap-2 bg-black p-4">
+    <header className="fixed left-0 right-0 top-0 z-10 flex items-center justify-center gap-2 bg-black p-4">
       <Link className={pathname === '/' ? 'text-blue-500' : ''} href="/">
         home
       </Link>
@@ -17,6 +17,6 @@ export default function AppNavBar() {
       <Link className={pathname === '/tools' ? 'text-blue-500' : ''} href="/tools">
         tools
       </Link>
-    </div>
+    </header>
   )
 }
