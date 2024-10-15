@@ -1,3 +1,4 @@
+import { Button, Checkbox, Divider, Input, Radio, RadioGroup } from '@nextui-org/react'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import React, { useState } from 'react'
@@ -5,72 +6,114 @@ import * as XLSX from 'xlsx'
 
 export default function SplitExcel() {
   const [file, setFile] = useState<File | null>(null)
-  const [splitBy, setSplitBy] = useState<'rows' | 'columns'>('rows') // 'rows' 或 'columns'
+  const [splitIntervals, setSplitIntervals] = useState(1)
+  const [isRow, setIsRow] = useState(true)
+  const [keepHeader, setKeepHeader] = useState(true)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFile(e.target.files?.[0] || null)
+  // 上传文件
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) {
+      return
+    }
+    const file = e.target.files[0]
+    setFile(file)
   }
 
-  const splitAndDownload = async () => {
-    if (!file) return
-
-    const data = await file.arrayBuffer()
-    const workbook = XLSX.read(data, { type: 'array' })
-    const sheetName = workbook.SheetNames[0]
-    const sheet = workbook.Sheets[sheetName]
-    const json: string[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 })
-
-    const zip = new JSZip()
-
-    if (splitBy === 'rows') {
-      json.forEach((row: string[], index: number) => {
-        const newSheet = XLSX.utils.aoa_to_sheet([row])
-        const newWorkbook = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(newWorkbook, newSheet, 'Sheet1')
-        const wbout = XLSX.write(newWorkbook, { type: 'binary', bookType: 'xlsx' })
-        const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' })
-        zip.file(`Row_${index + 1}.xlsx`, blob)
-      })
-    } else {
-      const columns: string[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' })
-      columns[0].forEach((col: string, index: number) => {
-        const colData = json.map((row: string[]) => [row[index]])
-        const newSheet = XLSX.utils.aoa_to_sheet(colData)
-        const newWorkbook = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(newWorkbook, newSheet, 'Sheet1')
-        const wbout = XLSX.write(newWorkbook, { type: 'binary', bookType: 'xlsx' })
-        const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' })
-        zip.file(`Column_${index + 1}.xlsx`, blob)
-      })
+  // 拆分并下载
+  const handleSplitAndDownload = async () => {
+    if (!file) {
+      alert('请先上传Excel文件')
+      return
     }
 
-    const content = await zip.generateAsync({ type: 'blob' })
-    saveAs(content, 'split_files.zip')
-  }
+    // 读取上传的Excel文件
+    const data = await file.arrayBuffer()
+    const workbook = XLSX.read(data)
 
-  const s2ab = (s: string): ArrayBuffer => {
-    const buf = new ArrayBuffer(s.length)
-    const view = new Uint8Array(buf)
-    for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff
-    return buf
+    // 假设只处理第一个工作表
+    const sheetName = workbook.SheetNames[0]
+    const worksheet = workbook.Sheets[sheetName]
+    const jsonData = XLSX.utils.sheet_to_json<string[][]>(worksheet, { header: 1 }) // 以数组形式获取数据
+
+    // 根据选择进行拆分
+    const splitDataArray = []
+    if (isRow) {
+      // 按行拆分
+      const headerRow = keepHeader ? jsonData[0] : null // 获取表头
+      const dataRows = keepHeader ? jsonData.slice(1) : jsonData // 数据行
+
+      for (let i = 0; i < dataRows.length; i += splitIntervals) {
+        let chunk = dataRows.slice(i, i + splitIntervals)
+        if (keepHeader && headerRow) {
+          chunk = [headerRow, ...chunk] // 在每个块的开头添加表头
+        }
+        splitDataArray.push(chunk)
+      }
+    } else {
+      // 按列拆分
+      const numColumns = jsonData[0].length
+      for (let i = 0; i < numColumns; i += splitIntervals) {
+        const chunk = jsonData.map((row) => row.slice(i, i + splitIntervals))
+        splitDataArray.push(chunk)
+      }
+    }
+
+    // 创建压缩包
+    const zip = new JSZip()
+
+    // 遍历拆分的数据，生成新的Excel文件并添加到压缩包中
+    splitDataArray.forEach((dataChunk, index) => {
+      const newWorkbook = XLSX.utils.book_new()
+      const newWorksheet = XLSX.utils.aoa_to_sheet(dataChunk)
+      XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, 'Sheet1')
+      const wbout = XLSX.write(newWorkbook, {
+        type: 'array',
+        bookType: 'xlsx'
+      })
+      zip.file(`split_${index + 1}.xlsx`, wbout)
+    })
+
+    // 生成压缩包并触发下载
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+      saveAs(content, 'split_excel_files.zip') // 修改文件名
+    })
   }
 
   return (
     <div className="flex flex-col gap-2">
-      <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-      <div className="flex gap-2">
-        <label>
-          <input type="radio" value="rows" checked={splitBy === 'rows'} onChange={() => setSplitBy('rows')} />
-          按行拆分
-        </label>
-        <label>
-          <input type="radio" value="columns" checked={splitBy === 'columns'} onChange={() => setSplitBy('columns')} />
-          按列拆分
-        </label>
+      <input type="file" accept=".xlsx,.xls" onChange={handleUpload} />
+
+      <div className="flex h-6 gap-4">
+        <RadioGroup
+          orientation="horizontal"
+          style={{
+            flexShrink: 0
+          }}
+          value={isRow ? 'row' : 'column'}
+          onChange={(e) => {
+            setIsRow(e.target.value === 'row')
+          }}
+        >
+          <Radio value="row">按行拆分</Radio>
+          <Radio value="column">按列拆分</Radio>
+        </RadioGroup>
+
+        <Divider orientation="vertical" />
+
+        <Checkbox checked={keepHeader} onChange={(e) => setKeepHeader(e.target.checked)} isDisabled={!isRow}>
+          包含表头
+        </Checkbox>
       </div>
-      <div className="flex gap-2">
-        <button onClick={splitAndDownload}>拆分并下载</button>
-      </div>
+
+      <Input
+        type="number"
+        label="拆分间隔"
+        min={1}
+        value={splitIntervals.toString()}
+        onChange={(e) => setSplitIntervals(Number(e.target.value))}
+      />
+
+      <Button onClick={handleSplitAndDownload}>拆分并下载</Button>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { Button } from '@nextui-org/react'
 import { saveAs } from 'file-saver'
 import { useState } from 'react'
 import * as XLSX from 'xlsx'
@@ -47,18 +48,20 @@ export default function ExcelToCsv() {
   return (
     <div className="flex flex-col gap-2">
       <input type="file" accept=".xlsx,.xls" onChange={handleUpload} />
-      <div className="flex gap-2">
-        <button onClick={handleConvert}>转换</button>
-        <button onClick={handleDownload} disabled={!csvData}>
-          下载
-        </button>
-      </div>
       <textarea
         className="h-48 w-full whitespace-pre-wrap rounded p-2"
         placeholder="请输入文本内容"
         value={csvData || ''}
         onChange={(e) => setCsvData(e.target.value)}
       ></textarea>
+      <div className="flex gap-2">
+        <Button onClick={handleConvert} variant="bordered">
+          转换
+        </Button>
+        <Button onClick={handleDownload} disabled={!csvData}>
+          下载
+        </Button>
+      </div>
     </div>
   )
 }

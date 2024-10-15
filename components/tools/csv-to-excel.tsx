@@ -1,3 +1,4 @@
+import { Button } from '@nextui-org/react'
 import { saveAs } from 'file-saver'
 import { useState } from 'react'
 import * as XLSX from 'xlsx'
@@ -51,8 +52,10 @@ export default function CsvToExcel() {
         className="h-48 w-full"
       ></textarea>
       <div className="flex gap-2">
-        <button onClick={handleConvert}>转换</button>
-        <button onClick={handleDownload}>下载</button>
+        <Button onClick={handleConvert} variant="bordered">
+          转换
+        </Button>
+        <Button onClick={handleDownload}>下载</Button>
       </div>
     </div>
   )
