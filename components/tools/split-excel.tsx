@@ -100,7 +100,7 @@ export default function SplitExcel() {
 
         <Divider orientation="vertical" />
 
-        <Checkbox checked={keepHeader} onChange={(e) => setKeepHeader(e.target.checked)} isDisabled={!isRow}>
+        <Checkbox isSelected={keepHeader} onChange={(e) => setKeepHeader(e.target.checked)} isDisabled={!isRow}>
           包含表头
         </Checkbox>
       </div>
